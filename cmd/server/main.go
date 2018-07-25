@@ -12,11 +12,13 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/joho/godotenv"
 
-	"github.com/hieunmce/example-go/config/database/pg"
-	"github.com/hieunmce/example-go/endpoints"
-	serviceHttp "github.com/hieunmce/example-go/http"
-	"github.com/hieunmce/example-go/service"
-	userSvc "github.com/hieunmce/example-go/service/user"
+	"github.com/minhkhiemm/example-go/config/database/pg"
+	"github.com/minhkhiemm/example-go/endpoints"
+	serviceHttp "github.com/minhkhiemm/example-go/http"
+	"github.com/minhkhiemm/example-go/service"
+	bookSvc "github.com/minhkhiemm/example-go/service/book"
+	categorySvc "github.com/minhkhiemm/example-go/service/category"
+	userSvc "github.com/minhkhiemm/example-go/service/user"
 )
 
 func main() {
@@ -39,7 +41,7 @@ func main() {
 		logger = log.With(logger, "caller", log.DefaultCaller)
 	}
 
-	// setup locale
+	// setup local
 	{
 		loc, err := time.LoadLocation("Asia/Bangkok")
 		if err != nil {
@@ -57,6 +59,14 @@ func main() {
 				userSvc.NewPGService(pgDB),
 				userSvc.ValidationMiddleware(),
 			).(userSvc.Service),
+			CategoryService: service.Compose(
+				categorySvc.NewPGService(pgDB),
+				categorySvc.ValidationMiddleware(),
+			).(categorySvc.Service),
+			BookService: service.Compose(
+				bookSvc.NewPGService(pgDB),
+				// bookSvc.ValidationMiddleware(),
+			).(bookSvc.Service),
 		}
 	)
 	defer closeDB()

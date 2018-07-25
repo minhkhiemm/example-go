@@ -1,4 +1,4 @@
-package user
+package book
 
 import (
 	"context"
@@ -12,148 +12,144 @@ import (
 
 // CreateData data for CreateUser
 type CreateData struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	Name string `json:"name"`
 }
 
 // CreateRequest request struct for CreateUser
 type CreateRequest struct {
-	User CreateData `json:"user"`
+	Book CreateData `json:"book"`
 }
 
-// CreateResponse response struct for CreateUser
+// CreateResponse response struct for CreateBook
 type CreateResponse struct {
-	User domain.User `json:"user"`
+	Book domain.Book `json:"book"`
 }
 
-// StatusCode customstatus code for success create User
+// StatusCode customstatus code for success create Book
 func (CreateResponse) StatusCode() int {
 	return http.StatusCreated
 }
 
-// MakeCreateEndpoint make endpoint for create a User
+// MakeCreateEndpoint make endpoint for create a Book
 func MakeCreateEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		var (
 			req  = request.(CreateRequest)
-			user = &domain.User{
-				Name:  req.User.Name,
-				Email: req.User.Email,
+			book = &domain.Book{
+				Name: req.Book.Name,
 			}
 		)
 
-		err := s.UserService.Create(ctx, user)
+		err := s.BookService.Create(ctx, book)
 		if err != nil {
 			return nil, err
 		}
 
-		return CreateResponse{User: *user}, nil
+		return CreateResponse{Book: *book}, nil
 	}
 }
 
-// FindRequest request struct for Find a User
+// FindRequest request struct for Find a Book
 type FindRequest struct {
-	UserID domain.UUID
+	BookID domain.UUID
 }
 
-// FindResponse response struct for Find a User
+// FindResponse response struct for Find a Book
 type FindResponse struct {
-	User *domain.User `json:"user"`
+	Book *domain.Book `json:"book"`
 }
 
-// MakeFindEndPoint make endpoint for find User
+// MakeFindEndPoint make endpoint for find Book
 func MakeFindEndPoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		var userFind domain.User
+		var bookFind domain.Book
 		req := request.(FindRequest)
-		userFind.ID = req.UserID
+		bookFind.ID = req.BookID
 
-		user, err := s.UserService.Find(ctx, &userFind)
+		book, err := s.BookService.Find(ctx, &bookFind)
 		if err != nil {
 			return nil, err
 		}
-		return FindResponse{User: user}, nil
+		return FindResponse{Book: book}, nil
 	}
 }
 
-// FindAllRequest request struct for FindAll User
+// FindAllRequest request struct for FindAll Book
 type FindAllRequest struct{}
 
-// FindAllResponse request struct for find all User
+// FindAllResponse request struct for find all Book
 type FindAllResponse struct {
-	Users []domain.User `json:"users"`
+	Book []domain.Book `json:"book"`
 }
 
-// MakeFindAllEndpoint make endpoint for find all User
+// MakeFindAllEndpoint make endpoint for find all Book
 func MakeFindAllEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		_ = request.(FindAllRequest)
-		users, err := s.UserService.FindAll(ctx)
+		book, err := s.BookService.FindAll(ctx)
 		if err != nil {
 			return nil, err
 		}
-		return FindAllResponse{Users: users}, nil
+		return FindAllResponse{Book: book}, nil
 	}
 }
 
 // UpdateData data for Create
 type UpdateData struct {
-	ID    domain.UUID `json:"-"`
-	Name  string      `json:"name"`
-	Email string      `json:"email"`
+	ID   domain.UUID `json:"-"`
+	Name string      `json:"name"`
 }
 
 // UpdateRequest request struct for update
 type UpdateRequest struct {
-	User UpdateData `json:"user"`
+	Book UpdateData `json:"book"`
 }
 
 // UpdateResponse response struct for Create
 type UpdateResponse struct {
-	User domain.User `json:"user"`
+	Book domain.Book `json:"book"`
 }
 
-// MakeUpdateEndpoint make endpoint for update a User
+// MakeUpdateEndpoint make endpoint for update a Book
 func MakeUpdateEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		var (
 			req  = request.(UpdateRequest)
-			user = domain.User{
-				Model: domain.Model{ID: req.User.ID},
-				Name:  req.User.Name,
-				Email: req.User.Email,
+			book = domain.Book{
+				Model: domain.Model{ID: req.Book.ID},
+				Name:  req.Book.Name,
 			}
 		)
 
-		res, err := s.UserService.Update(ctx, &user)
+		res, err := s.BookService.Update(ctx, &book)
 		if err != nil {
 			return nil, err
 		}
 
-		return UpdateResponse{User: *res}, nil
+		return UpdateResponse{Book: *res}, nil
 	}
 }
 
-// DeleteRequest request struct for delete a User
+// DeleteRequest request struct for delete a Book
 type DeleteRequest struct {
-	UserID domain.UUID
+	BookID domain.UUID
 }
 
-// DeleteResponse response struct for Find a User
+// DeleteResponse response struct for Find a Book
 type DeleteResponse struct {
 	Status string `json:"status"`
 }
 
-// MakeDeleteEndpoint make endpoint for update a User
+// MakeDeleteEndpoint make endpoint for update a Book
 func MakeDeleteEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		var (
-			userFind = domain.User{}
+			bookFind = domain.Book{}
 			req      = request.(DeleteRequest)
 		)
-		userFind.ID = req.UserID
+		bookFind.ID = req.BookID
 
-		err := s.UserService.Delete(ctx, &userFind)
+		err := s.BookService.Delete(ctx, &bookFind)
 		if err != nil {
 			return nil, err
 		}
