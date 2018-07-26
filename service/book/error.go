@@ -1,4 +1,4 @@
-package category
+package book
 
 import (
 	"net/http"
@@ -6,12 +6,13 @@ import (
 
 // Error Declaration
 var (
-	ErrNotFound        = errNotFound{}
-	ErrUnknown         = errUnknown{}
-	ErrNameIsRequired  = errNameIsRequired{}
-	ErrNameIsInvalid   = errNameIsInvalid{}
-	ErrRecordNotFound  = errRecordNotFound{}
-	ErrNameIsDuplicate = errNameIsDuplicate{}
+	ErrNotFound             = errNotFound{}
+	ErrUnknown              = errUnknown{}
+	ErrNameIsRequired       = errNameIsRequired{}
+	ErrRecordNotFound       = errRecordNotFound{}
+	ErrCategoryNotFound     = errCategoryNotFound{}
+	ErrNameIsInvalid        = errNameIsInvalid{}
+	ErrDescriptionIsInvalid = errDescriptionIsInvalid{}
 )
 
 type errNotFound struct{}
@@ -44,29 +45,37 @@ func (errRecordNotFound) StatusCode() int {
 type errNameIsRequired struct{}
 
 func (errNameIsRequired) Error() string {
-	return "category name is required"
+	return "book name is required"
 }
 
 func (errNameIsRequired) StatusCode() int {
 	return http.StatusBadRequest
 }
 
+type errCategoryNotFound struct{}
+
+func (errCategoryNotFound) Error() string {
+	return "category is not exist"
+}
+
+func (errCategoryNotFound) StatusCode() int {
+	return http.StatusNotFound
+}
+
 type errNameIsInvalid struct{}
 
 func (errNameIsInvalid) Error() string {
-	return "category name is invalid"
+	return "book name is invalid, need to have more than 5 character"
 }
-
 func (errNameIsInvalid) StatusCode() int {
 	return http.StatusBadRequest
 }
 
-type errNameIsDuplicate struct{}
+type errDescriptionIsInvalid struct{}
 
-func (errNameIsDuplicate) Error() string {
-	return "category name is already exist"
+func (errDescriptionIsInvalid) Error() string {
+	return "description is invalid, need to have more than 5 character"
 }
-
-func (errNameIsDuplicate) StatusCode() int {
+func (errDescriptionIsInvalid) StatusCode() int {
 	return http.StatusBadRequest
 }

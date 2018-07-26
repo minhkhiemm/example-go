@@ -35,7 +35,7 @@ func (s *pgService) Create(_ context.Context, p *domain.Category) error {
 
 // Update implement Update for Category service
 func (s *pgService) Update(_ context.Context, p *domain.Category) (*domain.Category, error) {
-	var categories []domain.Category
+	var category domain.Category
 	old := domain.Category{Model: domain.Model{ID: p.ID}}
 	if err := s.db.Find(&old).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -43,7 +43,7 @@ func (s *pgService) Update(_ context.Context, p *domain.Category) (*domain.Categ
 		}
 		return nil, err
 	}
-	if err := s.db.Where("name = ?", p.Name).Find(&categories).Error; err != nil {
+	if err := s.db.Where("name = ?", p.Name).Find(&category).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 
 			old.Name = p.Name
