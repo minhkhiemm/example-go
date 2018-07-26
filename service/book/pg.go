@@ -35,7 +35,11 @@ func (s *pgService) Update(_ context.Context, p *domain.Book) (*domain.Book, err
 		return nil, err
 	}
 
+	//update category of books cannot update new book id
 	old.Name = p.Name
+	old.CategoryID = p.CategoryID
+	old.Author = p.Author
+	old.Description = p.Description
 
 	return &old, s.db.Save(&old).Error
 }
