@@ -50,14 +50,6 @@ func Test_validationMiddleware_Update(t *testing.T) {
 			wantErr:         true,
 			errorStatusCode: http.StatusBadRequest,
 		},
-		{
-			name: "invalid category by category name lower than 5 character",
-			args: args{$domain.Category{
-				name:"six"
-			}},
-			wantErr: ErrNameIsInvalid,
-			errorStatusCode: http.StatusBadRequest
-		}
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
