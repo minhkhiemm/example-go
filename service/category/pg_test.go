@@ -1,8 +1,9 @@
+// +build integration
+
 package category
 
 import (
 	"context"
-	"fmt"
 	"reflect"
 	"testing"
 
@@ -12,7 +13,7 @@ import (
 	"github.com/minhkhiemm/example-go/domain"
 )
 
-func Test_pgService_Create(t *testing.T) {
+func TestPGService_Create(t *testing.T) {
 	t.Parallel()
 	testDB, _, cleanup := testutil.CreateTestDatabase(t)
 	defer cleanup()
@@ -33,7 +34,8 @@ func Test_pgService_Create(t *testing.T) {
 			name: "Success",
 			args: args{
 				&domain.Category{
-					Name: "Create category 1",
+					Name:  "Create New Category 1",
+					Email: "example@gmail.com",
 				},
 			},
 		},
@@ -50,7 +52,7 @@ func Test_pgService_Create(t *testing.T) {
 	}
 }
 
-func Test_pgService_Update(t *testing.T) {
+func TestPGService_Update(t *testing.T) {
 	t.Parallel()
 	testDB, _, cleanup := testutil.CreateTestDatabase(t)
 	defer cleanup()
@@ -76,11 +78,12 @@ func Test_pgService_Update(t *testing.T) {
 		wantErr error
 	}{
 		{
-			name: "Update success",
+			name: "success update",
 			args: args{
 				&domain.Category{
 					Model: domain.Model{ID: category.ID},
-					Name:  "category name 1",
+					Name:  "category Name 1",
+					Email: "example@gmail.com",
 				},
 			},
 		},
@@ -89,7 +92,8 @@ func Test_pgService_Update(t *testing.T) {
 			args: args{
 				&domain.Category{
 					Model: domain.Model{ID: fakeCategoryID},
-					Name:  "category name 2",
+					Name:  "category Name 1",
+					Email: "example@gmail.com",
 				},
 			},
 			wantErr: ErrNotFound,
@@ -101,15 +105,7 @@ func Test_pgService_Update(t *testing.T) {
 				db: testDB,
 			}
 			_, err := s.Update(context.Background(), tt.args.p)
-			fmt.Println("err", err)
-			fmt.Println("wantErr", tt.wantErr)
-			if err == tt.wantErr {
-				t.Errorf("test for equal error is %v, want Error %v", err, tt.wantErr)
-			}
-			if err != tt.wantErr {
-				t.Errorf("error is %v, want Error %v", err, tt.wantErr)
-			}
-			if err != nil {
+			if err != nil && err != tt.wantErr {
 				t.Errorf("pgService.Update() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
@@ -120,41 +116,77 @@ func Test_pgService_Update(t *testing.T) {
 	}
 }
 
-func Test_pgService_Find(t *testing.T) {
-	type fields struct {
-		db *gorm.DB
+func TestPGService_Find(t *testing.T) {
+	t.Parallel()
+	testDB, _, cleanup := testutil.CreateTestDatabase(t)
+	defer cleanup()
+	err := testutil.MigrateTables(testDB)
+	if err != nil {
+		t.Fatalf("Failed to migrate table by error %v", err)
 	}
+
+	category := domain.Category{}
+	err = testDB.Create(&category).Error
+	if err != nil {
+		t.Fatalf("Failed to create category by error %v", err)
+	}
+
+	fakeCategoryID := domain.MustGetUUIDFromString("1698bbd6-e0c8-4957-a5a9-8c536970994b")
+
 	type args struct {
-		in0 context.Context
-		p   *domain.Category
+		p *domain.Category
 	}
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
 		want    *domain.Category
-		wantErr bool
+		wantErr error
 	}{
-		// TODO: Add test cases.
+		{
+			name: "success find correct category",
+			args: args{
+				&domain.Category{
+					Model: domain.Model{ID: category.ID},
+				},
+			},
+			want: &domain.Category{
+				Model: domain.Model{ID: category.ID},
+			},
+		},
+		{
+			name: "failed find category by not exist category id",
+			args: args{
+				&domain.Category{
+					Model: domain.Model{ID: fakeCategoryID},
+				},
+			},
+			wantErr: ErrNotFound,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &pgService{
-				db: tt.fields.db,
+				db: testDB,
 			}
-			got, err := s.Find(tt.args.in0, tt.args.p)
-			if (err != nil) != tt.wantErr {
+
+			got, err := s.Find(context.Background(), tt.args.p)
+			if err != nil && err != tt.wantErr {
 				t.Errorf("pgService.Find() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
+			if err == nil && tt.wantErr != nil {
+				t.Errorf("pgService.Find() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if got != nil && got.ID.String() != tt.want.ID.String() {
 				t.Errorf("pgService.Find() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_pgService_FindAll(t *testing.T) {
+func TestPGService_FindAll(t *testing.T) {
 	type fields struct {
 		db *gorm.DB
 	}
@@ -187,28 +219,64 @@ func Test_pgService_FindAll(t *testing.T) {
 	}
 }
 
-func Test_pgService_Delete(t *testing.T) {
-	type fields struct {
-		db *gorm.DB
+func TestPGService_Delete(t *testing.T) {
+	t.Parallel()
+	testDB, _, cleanup := testutil.CreateTestDatabase(t)
+	defer cleanup()
+	err := testutil.MigrateTables(testDB)
+	if err != nil {
+		t.Fatalf("Failed to migrate table by error %v", err)
 	}
+
+	category := domain.Category{}
+	err = testDB.Create(&category).Error
+	if err != nil {
+		t.Fatalf("Failed to create category by error %v", err)
+	}
+
+	fakeCategoryID := domain.MustGetUUIDFromString("1698bbd6-e0c8-4957-a5a9-8c536970994b")
+
 	type args struct {
-		in0 context.Context
-		p   *domain.Category
+		p *domain.Category
 	}
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
-		wantErr bool
+		wantErr error
 	}{
-		// TODO: Add test cases.
+		{
+			name: "success delete",
+			args: args{
+				&domain.Category{
+					Name:  "This is category Name",
+					Model: domain.Model{ID: category.ID},
+					Email: "example@gmail.com",
+				},
+			},
+		},
+		{
+			name: "failed delete by not exist category id",
+			args: args{
+				&domain.Category{
+					Model: domain.Model{ID: fakeCategoryID},
+					Name:  "This is category Name",
+					Email: "example@gmail.com",
+				},
+			},
+			wantErr: ErrNotFound,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &pgService{
-				db: tt.fields.db,
+				db: testDB,
 			}
-			if err := s.Delete(tt.args.in0, tt.args.p); (err != nil) != tt.wantErr {
+			err := s.Delete(context.Background(), tt.args.p)
+			if err != nil && err != tt.wantErr {
+				t.Errorf("pgService.Delete() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if err == nil && tt.wantErr != nil {
 				t.Errorf("pgService.Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
