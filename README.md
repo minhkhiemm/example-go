@@ -52,9 +52,9 @@ Time spent: **{{time_spent}}** hours spent in total
   * [x] API must be able to delete a category.
   * [x] when delete categories all book belongs to that categories should deleted too.
   
-* [ ] Validate category is correct before (Create/Update):
-  * [ ] validate name of category is not empty and length > 5 characters.
-  * [ ] validate name of category not existed yet (for both create and update).
+* [x] Validate category is correct before (Create/Update):
+  * [x] validate name of category is not empty and length > 5 characters.
+  * [x] validate name of category not existed yet (for both create and update).
 
 * [x] API must be able to CRUD books:
   * [x] Each book should have the following fields:
@@ -92,9 +92,9 @@ Time spent: **{{time_spent}}** hours spent in total
   * [x] Validation testing (unit test)
   * [x] Endpoint testing (unit test)
   * [x] Database testing (integration)
-* [ ] Add testing for CRUD category:
-  * [ ] Validation testing
-  * [ ] Database testing
+* [x] Add testing for CRUD category:
+  * [x] Validation testing
+  * [x] Database testing
 * [ ] Add testing for CRUD books:
   * [ ] Validation testing
   * [ ] Database testing
