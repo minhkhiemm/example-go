@@ -47,3 +47,13 @@ func (s *pgService) Get(_ context.Context, id domain.UUID) (*domain.Order, error
 func (s *pgService) Update(_ context.Context, order *domain.Order) (*domain.Order, error) {
 	return order, s.db.Save(&order).Error
 }
+
+func (s *pgService) GetByShopID(_ context.Context, shopID domain.UUID) ([]domain.Order, error) {
+	orders := []domain.Order{}
+	return orders, s.db.Where("shop_id = ?", shopID).Find(&orders).Error
+}
+
+func (s *pgService) GetByMonth(_ context.Context, month int) ([]domain.Order, error) {
+	orders := []domain.Order{}
+	return nil, s.db.Where("date_part('month', created_at = ?", month).Find(&orders).Error
+}

@@ -7,7 +7,6 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/minhkhiemm/example-go/domain"
-	"github.com/minhkhiemm/example-go/errorer"
 	"github.com/minhkhiemm/example-go/service"
 )
 
@@ -33,6 +32,13 @@ func Create(s service.Service) endpoint.Endpoint {
 		res, err := s.OrderService.Create(ctx, &req)
 		if err != nil {
 			return nil, err
+		}
+		for i := range req.Details {
+			detail, err := s.DetailService.Create(ctx, &req.Details[i])
+			if err != nil {
+				return nil, err
+			}
+			req.Details[i] = *detail
 		}
 
 		return res, nil
@@ -63,9 +69,6 @@ func Update(s service.Service) endpoint.Endpoint {
 			oldOrder.OrderTime = req.OrderTime
 		}
 		if req.ReceiveTime != nil {
-			if req.ReceiveTime.Before(*oldOrder.OrderTime) {
-				return nil, errorer.ErrInvalidReceiveTime
-			}
 			oldOrder.ReceiveTime = req.ReceiveTime
 		}
 		if !req.AccountID.IsZero() {
@@ -87,5 +90,19 @@ func Update(s service.Service) endpoint.Endpoint {
 		}
 
 		return res, nil
+	}
+}
+
+func GetByShopID(s service.Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(GetRequest)
+		return s.OrderService.GetByShopID(ctx, req.ID)
+	}
+}
+
+func GetByMonth(s service.Service) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(MonthRequest)
+		return s.OrderService.GetByMonth(ctx, req.Month)
 	}
 }

@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -60,6 +61,24 @@ func NewHTTPHandler(endpoints endpoints.Endpoints,
 			encodeResponse,
 			options...,
 		).ServeHTTP)
+		r.Put("/{orderid}", httptransport.NewServer(
+			endpoints.UpdateOrder,
+			DecodeUpdateOrder,
+			encodeResponse,
+			options...,
+		).ServeHTTP)
+		r.Get("/{shop_id}", httptransport.NewServer(
+			endpoints.GetOrderByShopID,
+			DecodeGetORderByShopID,
+			encodeResponse,
+			options...,
+		).ServeHTTP)
+		r.Get("/{month}", httptransport.NewServer(
+			endpoints.GetOrderByMonth,
+			DecodeGetOrderByMonth,
+			encodeResponse,
+			options...,
+		).ServeHTTP)
 	})
 	r.Route("/accounts", func(r chi.Router) {
 		r.Post("/", httptransport.NewServer(
@@ -68,7 +87,25 @@ func NewHTTPHandler(endpoints endpoints.Endpoints,
 			encodeResponse,
 			options...,
 		).ServeHTTP)
+		r.Post("/login", httptransport.NewServer(
+			endpoints.Login,
+			DecodeCreateAccount,
+			encodeResponse,
+			options...,
+		).ServeHTTP)
+	})
+	r.Route("/drinks", func(r chi.Router) {
+		r.Get("/", httptransport.NewServer(
+			endpoints.GetAllDrink,
+			DecodeNullRequest,
+			encodeResponse,
+			options...,
+		).ServeHTTP)
 	})
 
 	return r
+}
+
+func DecodeNullRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	return nil, nil
 }

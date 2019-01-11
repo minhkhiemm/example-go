@@ -91,3 +91,25 @@ func DecodeUpdateOrder(_ context.Context, r *http.Request) (interface{}, error) 
 
 	return req, nil
 }
+
+func DecodeGetORderByShopID(_ context.Context, r *http.Request) (interface{}, error) {
+	req := order.GetRequest{}
+
+	id, err := domain.UUIDFromString(chi.URLParam(r, "shopid"))
+	if err != nil {
+		return nil, err
+	}
+	req.ID = id
+	return req, nil
+}
+
+func DecodeGetOrderByMonth(_ context.Context, r *http.Request) (interface{}, error) {
+	req := order.MonthRequest{}
+
+	month, err := strconv.Atoi(chi.URLParam(r, "month"))
+	if err != nil {
+		return nil, err
+	}
+	req.Month = month
+	return req, nil
+}

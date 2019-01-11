@@ -17,6 +17,8 @@ import (
 	serviceHttp "github.com/minhkhiemm/example-go/http"
 	"github.com/minhkhiemm/example-go/service"
 	accountService "github.com/minhkhiemm/example-go/service/account"
+	detailService "github.com/minhkhiemm/example-go/service/detail"
+	drinkService "github.com/minhkhiemm/example-go/service/drink"
 	orderService "github.com/minhkhiemm/example-go/service/order"
 )
 
@@ -60,6 +62,12 @@ func main() {
 			AccountService: service.Compose(
 				accountService.NewPGService(pgDB),
 			).(accountService.Service),
+			DetailService: service.Compose(
+				detailService.NewPGService(pgDB),
+			).(detailService.Service),
+			DrinkService: service.Compose(
+				drinkService.NewPGService(pgDB),
+			).(drinkService.Service),
 		}
 	)
 	defer closeDB()

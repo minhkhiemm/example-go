@@ -6,6 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 
 	"github.com/minhkhiemm/example-go/domain"
+	"github.com/minhkhiemm/example-go/errorer"
 )
 
 type pgService struct {
@@ -18,6 +19,20 @@ func NewPGService(db *gorm.DB) Service {
 	}
 }
 
-func (s *pgService) Create(_ context.Context, account *domain.Account) (*domain.Account, error) {
-	return account, s.db.Create(&account).Error
+func (s *pgService) Create(_ context.Context, account *domain.Account) error {
+	err := s.db.Where("user_name = ?", account.UserName).First(&domain.Account{}).Error
+	if err != nil {
+		return s.db.Create(&account).Error
+	}
+
+	return errorer.ErrInvalidUserName
+}
+
+func (s *pgService) GetByUserName(_ context.Context, account *domain.Account) (string, error) {
+	err := s.db.Debug().Where("user_name = ? AND digest_password = ?", account.UserName, account.DigestPassword).Error
+	if err != nil {
+		return "", err
+	}
+
+	return account.Type, nil
 }
