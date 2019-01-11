@@ -24,7 +24,7 @@
 #   go-tests = true
 #   unused-packages = true
 [metadata.heroku]
-  root-package = "git.heroku.com/glacial-brushlands-22525"
+  root-package = "git.heroku.com/salty-retreat-45825"
   go-version = "go1.10"
   install = [ "./cmd/..."]
   ensure = "false"
