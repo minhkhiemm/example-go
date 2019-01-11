@@ -23,7 +23,11 @@
 #   non-go = false
 #   go-tests = true
 #   unused-packages = true
-
+[metadata.heroku]
+  root-package = "git.heroku.com/glacial-brushlands-22525"
+  go-version = "go1.10"
+  install = [ "./cmd/server"]
+  ensure = "false"
 
 [[constraint]]
   name = "github.com/go-chi/chi"
