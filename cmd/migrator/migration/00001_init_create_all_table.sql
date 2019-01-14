@@ -48,7 +48,8 @@ CREATE TABLE "public"."orders" (
  "receive_time" smallint,
  "shop_id" uuid REFERENCES shops(id),
  "account_id" uuid REFERENCES accounts(id),
- "detail_id" uuid REFERENCES details(id)
+ "detail_id" uuid REFERENCES details(id),
+ "total_price" INTEGER
 );
 
 ALTER TABLE details ADD COLUMN order_id uuid;

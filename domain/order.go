@@ -13,6 +13,7 @@ type Order struct {
 	DetailID    UUID      `json:"detail_id"`
 	Details     []Detail  `json:"details"`
 	AccountID   UUID      `json:"account_id"`
+	TotalPrice  int       `json:"total_price"`
 }
 
 type OrderDate struct {
