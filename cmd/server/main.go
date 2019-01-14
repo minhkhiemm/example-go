@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/go-kit/kit/log"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -40,16 +39,6 @@ func main() {
 		logger = log.NewLogfmtLogger(log.NewSyncWriter(os.Stdout))
 		logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 		logger = log.With(logger, "caller", log.DefaultCaller)
-	}
-
-	// setup locale
-	{
-		loc, err := time.LoadLocation("Asia/Bangkok")
-		if err != nil {
-			logger.Log("error", err)
-			os.Exit(1)
-		}
-		time.Local = loc
 	}
 
 	// setup service

@@ -32,6 +32,10 @@ func (s *pgService) GetAllByDate(_ context.Context, date domain.OrderDate) ([]*d
 		query = query.Where("date_part('year', created_at) = ?", date.Year)
 	}
 
+	if !date.ShopID.IsZero() {
+		query = query.Where("shop_id = ?", date.ShopID)
+	}
+
 	return orders, query.Find(&orders).Error
 }
 

@@ -55,7 +55,7 @@ func NewHTTPHandler(endpoints endpoints.Endpoints,
 			encodeResponse,
 			options...,
 		).ServeHTTP)
-		r.Get("/{orderid}", httptransport.NewServer(
+		r.Get("/byorderid/{orderid}", httptransport.NewServer(
 			endpoints.GetOrderByID,
 			DecodeGetOrderByIDRequest,
 			encodeResponse,
@@ -67,13 +67,13 @@ func NewHTTPHandler(endpoints endpoints.Endpoints,
 			encodeResponse,
 			options...,
 		).ServeHTTP)
-		r.Get("/{shop_id}", httptransport.NewServer(
+		r.Get("/byshopid/{shop_id}", httptransport.NewServer(
 			endpoints.GetOrderByShopID,
 			DecodeGetORderByShopID,
 			encodeResponse,
 			options...,
 		).ServeHTTP)
-		r.Get("/{month}", httptransport.NewServer(
+		r.Get("/bymonth/{month}", httptransport.NewServer(
 			endpoints.GetOrderByMonth,
 			DecodeGetOrderByMonth,
 			encodeResponse,

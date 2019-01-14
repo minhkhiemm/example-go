@@ -14,5 +14,6 @@ func DecodeCreateAccount(_ context.Context, r *http.Request) (interface{}, error
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }

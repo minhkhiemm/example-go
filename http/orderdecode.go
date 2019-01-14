@@ -43,10 +43,15 @@ func DecodeGetAllByDateRequest(_ context.Context, r *http.Request) (interface{},
 		yearInt = yearParse
 	}
 
+	shopID, err := domain.UUIDFromString(r.URL.Query().Get("shopid"))
+	if err != nil {
+		return nil, err
+	}
 	return domain.OrderDate{
-		Date:  dateInt,
-		Month: monthInt,
-		Year:  yearInt,
+		Date:   dateInt,
+		Month:  monthInt,
+		Year:   yearInt,
+		ShopID: shopID,
 	}, nil
 }
 

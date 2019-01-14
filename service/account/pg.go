@@ -29,7 +29,7 @@ func (s *pgService) Create(_ context.Context, account *domain.Account) error {
 }
 
 func (s *pgService) GetByUserName(_ context.Context, account *domain.Account) (string, error) {
-	err := s.db.Debug().Where("user_name = ? AND digest_password = ?", account.UserName, account.DigestPassword).Error
+	err := s.db.Debug().Where("deleted_at IS NULL AND user_name = ? AND digest_password = ?", account.UserName, account.DigestPassword).First(&account).Error
 	if err != nil {
 		return "", err
 	}

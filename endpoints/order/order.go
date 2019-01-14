@@ -2,6 +2,10 @@ package order
 
 import (
 	"context"
+	"strconv"
+	"time"
+
+	"github.com/k0kubun/pp"
 
 	"github.com/jinzhu/gorm"
 
@@ -29,6 +33,15 @@ func GetAllByDate(s service.Service) endpoint.Endpoint {
 func Create(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(domain.Order)
+		now := time.Now()
+		receiveTimeStr := strconv.Itoa(*req.ReceiveTime) + "m"
+		receiveMinute, err := time.ParseDuration(receiveTimeStr)
+		if err != nil {
+			return nil, err
+		}
+		pp.Print(receiveMinute)
+
+		req.OrderTime = now.Add(receiveMinute * time.Nanosecond)
 		res, err := s.OrderService.Create(ctx, &req)
 		if err != nil {
 			return nil, err
@@ -65,7 +78,7 @@ func Update(s service.Service) endpoint.Endpoint {
 			return nil, err
 		}
 
-		if req.OrderTime != nil {
+		if !req.OrderTime.IsZero() {
 			oldOrder.OrderTime = req.OrderTime
 		}
 		if req.ReceiveTime != nil {
