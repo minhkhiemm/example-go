@@ -5,8 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/k0kubun/pp"
-
 	"github.com/jinzhu/gorm"
 
 	"github.com/go-kit/kit/endpoint"
@@ -34,14 +32,15 @@ func Create(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(domain.Order)
 		now := time.Now()
-		receiveTimeStr := strconv.Itoa(*req.ReceiveTime) + "m"
-		receiveMinute, err := time.ParseDuration(receiveTimeStr)
-		if err != nil {
-			return nil, err
-		}
-		pp.Print(receiveMinute)
+		if req.ReceiveTime != nil {
+			receiveTimeStr := strconv.Itoa(*req.ReceiveTime) + "m"
+			receiveMinute, err := time.ParseDuration(receiveTimeStr)
+			if err != nil {
+				return nil, err
+			}
 
-		req.OrderTime = now.Add(receiveMinute * time.Nanosecond)
+			req.OrderTime = now.Add(receiveMinute * time.Nanosecond)
+		}
 		res, err := s.OrderService.Create(ctx, &req)
 		if err != nil {
 			return nil, err
